@@ -199,7 +199,7 @@
             white-space: nowrap;
         }
 
-        /* Redesigned Card Style (Rose Gold & Elegant Vignette) */
+        /* Card Style */
         .invitation-card {
             width: 100%;
             background: var(--card-bg);
@@ -271,6 +271,19 @@
             background: linear-gradient(90deg, transparent, var(--rose-gold), transparent);
             margin: 22px auto;
             width: 75%;
+        }
+
+        .event-date-badge {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--rose-gold);
+            background: rgba(232, 180, 184, 0.1);
+            border: 1px solid var(--rose-gold);
+            padding: 6px 18px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
         }
 
         .countdown-title {
@@ -502,7 +515,8 @@
 
             <div class="divider"></div>
 
-            <!-- Countdown Timer Block -->
+            <!-- Event Date & Countdown Timer Block -->
+            <div class="event-date-badge">📅 Sábado, 26 de Diciembre de 2026 - 12:00 PM</div>
             <div class="countdown-title">⏳ Cuenta Regresiva para la Noche</div>
             <div class="countdown-grid">
                 <div class="time-card">
@@ -548,8 +562,9 @@
         </div>
     </div>
 
-    <audio id="bgMusic" loop preload="auto">
-        <source src="Perfect.mp3" type="audio/mpeg">
+    <!-- Audio configurado sin loop para detenerse al finalizar -->
+    <audio id="bgMusic" preload="auto">
+        <source src="Safe And Sound.mp3" type="audio/mpeg">
     </audio>
 
     <button id="musicToggle" class="music-controller" onclick="toggleAudio()" title="Controlar Música">🎵</button>
@@ -652,6 +667,29 @@
             }
         }
 
+        // EVENTO: Pausar música al finalizar
+        audio.addEventListener('ended', () => {
+            musicBtn.classList.remove('playing');
+            musicBtn.innerText = '🎵';
+        });
+
+        // EVENTO: Pausar música al salir de la pestaña o minimizar el navegador
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden && !audio.paused) {
+                audio.pause();
+                musicBtn.classList.remove('playing');
+                musicBtn.innerText = '🎵';
+            }
+        });
+
+        window.addEventListener('blur', () => {
+            if (!audio.paused) {
+                audio.pause();
+                musicBtn.classList.remove('playing');
+                musicBtn.innerText = '🎵';
+            }
+        });
+
         const targetDate = new Date("2026-12-26T12:00:00").getTime();
 
         function updateCountdown() {
@@ -698,7 +736,7 @@
             mensaje.innerText = 'Guardando respuesta...';
 
             try {
-                const response = await fetch('https://webhook.polirc.edu.pe/webhook/prjpromo', {
+                const response = await fetch('https://n8n.polirc.edu.pe/webhook/asistencia-promo', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
